@@ -1,0 +1,6 @@
+ktor:
+  application:
+    modules:
+      - ru.threea.ApplicationKt.module
+  deployment:
+    port: 8080

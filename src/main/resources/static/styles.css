@@ -1,0 +1,138 @@
+:root {
+    --bs-primary: #A8DADC; /* Светлый голубой */
+    --bs-secondary: #F1FAEE; /* Светлый бежевый */
+    --bs-success: #E9CBA7; /* Песочный */
+    --bs-danger: #F4A261; /* Теплый оранжевый */
+    --bs-warning: #F1FAEE; /* Светлый бежевый */
+    --bs-info: #A8DADC; /* Светлый голубой */
+    --bs-light: #F1FAEE; /* Светлый бежевый */
+    --bs-dark: #1D3557; /* Темный синий */
+    --navbar-height: 100px;
+}
+
+:is(h1, h2, h3, h4, h5, h6) {
+    font-family: "Noto Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-variation-settings: "wdth" 100;
+    line-height: 1.3;
+    margin: 1.5em 0 0.5em;
+}
+
+body {
+    padding-top: 70px;
+}
+
+h1 {
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: -0.02em;
+}
+
+h2 {
+    font-weight: 600;
+    font-size: 2rem;
+    letter-spacing: -0.01em;
+}
+
+h3 {
+    font-weight: 600;
+    font-size: 1.75rem;
+}
+
+h4 {
+    font-weight: 500;
+    font-size: 1.5rem;
+}
+
+h5 {
+    font-weight: 500;
+    font-size: 1.25rem;
+}
+
+h6 {
+    font-weight: 500;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+p {
+    line-height: 1.6;
+    font-family: "Noto Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    font-size: 1.5rem;
+}
+
+.cdkl5-symptoms {
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+.symptom-item {
+    transition: all 0.2s;
+    border-left: 4px solid #4e73df;
+}
+
+.symptom-item:hover {
+    background-color: #f1f7fe !important;
+    transform: translateX(3px);
+}
+
+.cdkl5-symptoms dt {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.cdkl5-symptoms dd {
+    color: #555;
+}
+
+p + h2 {
+    margin-top: 2.2em; /* Особо большой отступ перед h2 после текста */
+}
+
+section {
+    display: grid;
+    gap: 20px;
+}
+
+.navbar {
+    background-color: rgba(177, 234, 255, 0.55);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.navbar-brand {
+    font-family: "Noto Sans", sans-serif;
+    font-size: 2rem !important;
+}
+
+.sticky-top {
+    border: 1px solid #f1f1f1;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 5px 10px rgb(231 231 231 / 48%);
+    top: 140px;
+}
+
+
+.content {
+    margin-top: 70px;
+}
+
+/* Фиксируем подвал внизу */
+
+footer {
+    margin-top: auto; /* Это фиксирует подвал внизу */
+}
+
+
+.footer-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
