@@ -8,8 +8,10 @@ jobs:
     container:
       gradle:jdk17-alpine
     steps:
-      - name: Checkou
-        uses: actions/checkout@v3
+      - name: Checkout
+        run: |
+          git clone https://gitverse.com/${{ gitverse.repository }}
+          git checkout ${{ github.sha }}
       - name: Build
         run: |
           ./gradlew build
