@@ -30,7 +30,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: app-artifacts
-          path: /tmp/artifacts/*
+          path: |
+            /tmp/artifacts/app.jar
+            /tmp/artifacts/Dockerfile
 
   deploy:
     needs: build
