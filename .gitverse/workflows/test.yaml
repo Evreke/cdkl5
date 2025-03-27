@@ -5,11 +5,11 @@ jobs:
   build-test:
     name: Test context
     runs-on: ubuntu-cloud-runner
+    container:
+      openjdk:17
     steps:
       - uses: actions/checkout@v3 # Checkout the repository code
       - name: Make gradle executable
         run: chmod +x gradlew
-      - name: Install java
-        run: apt install default-jre
       - name: Build
         run: ./gradlew build
