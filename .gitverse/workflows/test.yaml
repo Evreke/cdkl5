@@ -7,6 +7,5 @@ jobs:
     runs-on: ubuntu-cloud-runner
     steps:
       - uses: actions/checkout@v3 # Checkout the repository code
-
       - name: Display event name
-        run: ./gradlew build
+        run: docker build .
