@@ -6,8 +6,6 @@ jobs:
     name: Test context
     runs-on: ubuntu-cloud-runner
     steps:
-      - name: Install Node.js (Alpine)
-        run: apk add --no-cache nodejs npm  # Alpine uses `apk`
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -52,8 +50,8 @@ jobs:
 
       - name: Deploy to Docker host
         run: |
-          scp -r . root@185.207.1.133:/tmp/deploy/
-          ssh root@185.207.1.133 "
+          scp -r . ${{ secrets.SSH_ADDRESS}}:/tmp/deploy/
+          ssh ${{ secrets.SSH_ADDRESS}} "
             cd /tmp/deploy
             docker build -t cdkl5:latest .
             docker stop cdkl5 || true
