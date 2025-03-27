@@ -8,4 +8,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3 # Checkout the repository code
       - name: Display event name
-        run: docker build .
+        run: ls
