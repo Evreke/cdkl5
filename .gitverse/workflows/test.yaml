@@ -5,14 +5,10 @@ jobs:
   build-test:
     name: Test context
     runs-on: ubuntu-cloud-runner
+    container:
+      gradle:ubi-minimal
     steps:
-      - uses: actions/checkout@v3  # Checkout the repository code
-
-      - name: Install jdk
-        run: |
-          apt-get update
-          apt-get -y install default-jdk
-
       - name: Build
+        uses: actions/checkout@v3  # Checkout the repository code
         run: |
           ./gradlew build
