@@ -8,10 +8,10 @@ jobs:
     container:
       gradle:jdk17-alpine
     steps:
+      - name: Install Node.js (Alpine)
+        run: apk add --no-cache nodejs npm  # Alpine uses `apk`
       - name: Checkout
-        run: |
-          git clone https://gitverse.com/${{ gitverse.repository }}
-          git checkout ${{ github.sha }}
+        uses: actions/checkout@v4
       - name: Build
         run: |
           ./gradlew build
