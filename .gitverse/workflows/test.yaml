@@ -8,7 +8,7 @@ jobs:
     container:
       gradle:ubi-minimal
     steps:
+      - uses: actions/checkout@v3
       - name: Build
-        uses: actions/checkout@v3  # Checkout the repository code
         run: |
           ./gradlew build
