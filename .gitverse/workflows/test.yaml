@@ -2,16 +2,60 @@ name: Сборка
 on:
   push:
 jobs:
-  build-test:
+  build:
     name: Test context
     runs-on: ubuntu-cloud-runner
-    container:
-      gradle:jdk17-alpine
     steps:
       - name: Install Node.js (Alpine)
         run: apk add --no-cache nodejs npm  # Alpine uses `apk`
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'  # Faster builds
+
       - name: Build
         run: |
           ./gradlew build
+
+      - name: Prepare Docker artifacts
+        run: |
+          mkdir -p /tmp/artifacts
+          cp build/libs/cdkl5-all.jar /tmp/artifacts/app.jar
+          cp Dockerfile /tmp/artifacts/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-artifacts
+          path: /tmp/artifacts/*
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-cloud-runner  # Runs on host (not in a container)
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: app-artifacts
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.CDKL5 }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Deploy to Docker host
+        run: |
+          scp -r . root@185.207.1.133:/tmp/deploy/
+          ssh root@185.207.1.133 "
+            cd /tmp/deploy
+            docker build -t cdkl5:latest .
+            docker stop cdkl5 || true
+            docker rm cdkl5 || true
+            docker run -d --name cdkl5 -p 8080:8080 cdkl5:latest
