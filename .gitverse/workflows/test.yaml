@@ -6,10 +6,13 @@ jobs:
     name: Test context
     runs-on: ubuntu-cloud-runner
     steps:
-      - uses: actions/checkout@v3 # Checkout the repository code
-      - name: Make gradle executable
-        run: chmod +x gradlew
-      - name: Install java
-        run: apt install default-jre
+      - uses: actions/checkout@v3  # Checkout the repository code
+
+      - name: Install jdk
+        run: |
+          apt-get update
+          apt-get -y install default-jdk
+
       - name: Build
-        run: ./gradlew build
+        run: |
+          ./gradlew build
