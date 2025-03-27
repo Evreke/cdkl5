@@ -9,5 +9,7 @@ jobs:
       - uses: actions/checkout@v3 # Checkout the repository code
       - name: Make gradle executable
         run: chmod +x gradlew
+      - name: Java version
+        run: java --version
       - name: Build
         run: ./gradlew build
