@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
   deploy:
     name: Deploy
     needs: build
-    runs-on: self-hosted  # Runs on host (not in a container)
+    runs-on: ubuntu-latest   # Runs on host (not in a container)
 
     steps:
       - name: Download artifacts
