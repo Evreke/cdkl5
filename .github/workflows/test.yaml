@@ -68,7 +68,7 @@ jobs:
           cd /home/${{ secrets.REMOTE_USER }}/cdkl5 || { echo "Failed to change directory"; exit 1; }
           
           echo "Copying JAR..."
-          cp /home/${{ secrets.REMOTE_USER }}/deploy/cdkl5-all.jar ./app.jar || { echo "Failed to copy JAR"; exit 1; }
+          cp /home/${{ secrets.REMOTE_USER }}/deploy/artifacts/* ./ || { echo "Failed to copy JAR"; exit 1; }
           
           # Rebuild and restart container
           echo "Rebuilding and restarting Docker container..."
