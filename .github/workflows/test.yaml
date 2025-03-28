@@ -55,7 +55,7 @@ jobs:
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
       - name: Copy files via SCP
         run: |
-          scp -r -P ${{ secrets.REMOTE_PORT }} ./artifacts ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/cdkl5
+          scp -r -P ${{ secrets.REMOTE_PORT }} ./artifacts ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/deploy
 
       - name: SSH into the server and run commands
         run: |
@@ -65,7 +65,7 @@ jobs:
           
           # Navigate to project directory
           echo "Changing to project directory..."
-          cd /cdkl5 || { echo "Failed to change directory"; exit 1; }
+          cd /home/${{ secrets.REMOTE_USER }}/cdkl5 || { echo "Failed to change directory"; exit 1; }
           
           echo "Copying JAR..."
           cp /home/${{ secrets.REMOTE_USER }}/deploy/cdkl5-all.jar ./app.jar || { echo "Failed to copy JAR"; exit 1; }
