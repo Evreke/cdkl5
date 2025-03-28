@@ -3,18 +3,16 @@ on:
   push:
 jobs:
   build:
-    name: Test context
-    runs-on: ubuntu-cloud-runner
+    name: Build
+    runs-on: ubuntu-latest
+    container: alpine:3.21.3
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'gradle'  # Faster builds
+      - name: Set up environment
+        run:
+          apk add openjdk21
+          apk add nodejs
 
       - name: Build
         run: |
@@ -26,23 +24,22 @@ jobs:
           cp build/libs/cdkl5-all.jar /tmp/artifacts/app.jar
           cp Dockerfile /tmp/artifacts/
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+      - name: Save cache
+        uses: actions/cache@v3
         with:
-          name: app-artifacts
-          path: |
-            /tmp/artifacts/app.jar
-            /tmp/artifacts/Dockerfile
+          path: output
+          key: ${{ runner.os }}-artifact-cache
 
   deploy:
     needs: build
-    runs-on: ubuntu-cloud-runner  # Runs on host (not in a container)
+    runs-on: ubuntu-latest  # Runs on host (not in a container)
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/cache@v3
         with:
-          name: app-artifacts
+          path: output
+          key: ${{ runner.os }}-artifact-cache
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
