@@ -46,18 +46,36 @@ jobs:
         with:
           name: app-artifacts
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-
-      - name: Deploy to Docker host
+      - name: Set up SSH key
         run: |
-          scp -r . ${{ secrets.SSH_ADDRESS}}:/tmp/deploy/
-          ssh ${{ secrets.SSH_ADDRESS}} "
-            cd /tmp/deploy
-            docker build -t cdkl5:latest .
-            docker stop cdkl5 || true
-            docker rm cdkl5 || true
-            docker run -d --name cdkl5 -p 8080:8080 cdkl5:latest
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+      - name: Copy files via SCP
+        run: |
+          scp -r -P ${{ secrets.REMOTE_PORT }} ./build ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/deploy
+
+      - name: SSH into the server and run commands
+        run: |
+          ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+          set -e
+          echo "=== Starting deployment ==="
+          
+          # Navigate to project directory
+          echo "Changing to project directory..."
+          cd /cdkl5 || { echo "Failed to change directory"; exit 1; }
+          
+          echo "Copying JAR..."
+          cp /home/${{ secrets.REMOTE_USER }}/deploy/cdkl5-all.jar ./app.jar || { echo "Failed to copy JAR"; exit 1; }
+          
+          # Rebuild and restart container
+          echo "Rebuilding and restarting Docker container..."
+          docker compose build --no-cache cdkl && \
+          docker compose up -d --force-recreate --no-deps cdkl || { echo "Docker commands failed"; exit 1; }
+          
+          echo "Verifying container status..."
+          docker ps --filter "name=cdkl" --format "{{.Status}}" | grep -q "Up" || { echo "Container not running"; exit 1; }
+          
+          echo "=== Deployment successful ==="
+          EOF
