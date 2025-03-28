@@ -54,7 +54,7 @@ jobs:
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
       - name: Copy files via SCP
         run: |
-          scp -r -P ${{ secrets.REMOTE_PORT }} ./artifacts ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/deploy
+          scp -r -P ${{ secrets.REMOTE_PORT }} ./artifacts ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/cdkl5
 
       - name: SSH into the server and run commands
         run: |
