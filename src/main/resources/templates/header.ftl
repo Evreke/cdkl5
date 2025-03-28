@@ -4,7 +4,7 @@
             <div class="row w-100">
                 <!-- Левая колонка с логотипом -->
                 <div class="col-auto d-flex align-items-center">
-                    <a class="navbar-brand" href="/about-cdkl5">Сообщество пациентов CDKL5</a>
+                    <a class="navbar-brand" href="/">Сообщество пациентов CDKL5</a>
                 </div>
 
                 <!-- Правая колонка с меню -->
