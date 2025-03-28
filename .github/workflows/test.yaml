@@ -38,7 +38,7 @@ jobs:
   deploy:
     name: Deploy
     needs: build
-    runs-on: ubuntu-latest   # Runs on host (not in a container)
+    runs-on: ubuntu-latest
 
     steps:
       - name: Download artifacts
