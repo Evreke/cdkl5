@@ -26,7 +26,6 @@ dependencies {
   implementation("io.ktor:ktor-server-core")
   implementation("io.ktor:ktor-server-host-common")
   implementation("io.ktor:ktor-server-webjars")
-//  implementation("org.webjars:jquery:3.2.1")
   implementation("io.ktor:ktor-server-call-logging")
   implementation("io.ktor:ktor-server-metrics-micrometer")
   implementation("io.micrometer:micrometer-registry-prometheus:$prometheus_version")
