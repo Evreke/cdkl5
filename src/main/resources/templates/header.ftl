@@ -27,7 +27,7 @@
                                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                             <#list item.children as child>
                                                 <li>
-                                                    <a class="dropdown-item <#if currentPage == (child.path!"")>fw-bold</#if>"
+                                                    <a class="dropdown-item <#if currentPage == (child.path!"")>fw-bold inactive</#if>"
                                                        href="${child.path!""}">
                                                         ${child.title!"Без названия"}
                                                     </a>
@@ -38,7 +38,7 @@
                                 <#else>
                                     <!-- Обычный пункт меню -->
                                     <li class="nav-item">
-                                        <a class="nav-link <#if currentPage == (item.path!"")>fw-bold</#if>"
+                                        <a class="nav-link <#if currentPage == (item.path!"")>fw-bold active<#else>inactive</#if>"
                                            href="${item.path!""}">
                                             ${item.title!"Без названия"}
                                         </a>
