@@ -2,7 +2,7 @@
     <div class="row">
         <!-- Основной контент -->
         <div class="col-lg-10">
-            <section class="article-title d-flex align-items-center justify-content-center text-center">
+            <section class="article-title dna d-flex align-items-center justify-content-center text-center">
                 <div class="container">
                     <h1 class="mb-0 white">Что такое расстройство CDKL5?</h1> <!-- mb-0 убирает отступ снизу -->
                 </div>

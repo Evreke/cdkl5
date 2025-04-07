@@ -2,9 +2,13 @@
     <div class="row">
         <div class="col-lg-10">
             <header>
-                <h1>Сообщество CDKL5</h1>
+                <h1></h1>
             </header>
-
+            <section class="article-title hand d-flex align-items-center justify-content-center text-center">
+                <div class="container">
+                    <h1 class="mb-0 white">Сообщество CDKL5</h1> <!-- mb-0 убирает отступ снизу -->
+                </div>
+            </section>
             <main>
                 <section>
                     <p>Сообщество CDKL5 - это русскоязычные семьи, воспитывающие детей и молодых взрослых с редким
