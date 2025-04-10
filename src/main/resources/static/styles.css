@@ -41,10 +41,16 @@ nav.anchor-menu > a {
     top: 140px;
 }
 
+.logo {
+    height: 90px;
+    filter: drop-shadow(0px 1px 5px #fff);
+}
+
 h1 {
     font-weight: 700;
     font-size: 2.5rem;
     letter-spacing: -0.02em;
+    text-shadow: 1px 1px 1px black;
 }
 
 h1.white {
@@ -57,22 +63,22 @@ h1.white {
 }
 
 .article-title.dna {
-    background-image: url('img/ЭЭГ2.jpg');
+    background-image: url('img/eeg.webp');
     background-size: cover;
 }
 
 .article-title.treatment {
-    background-image: url('img/AAV.png');
+    background-image: url('img/aav.webp');
     background-size: cover;
 }
 
 .article-title.genetics {
-    background-image: url('img/dna rna k2.png');
+    background-image: url('img/dna-rna.webp');
     background-size: cover;
 }
 
 .article-title.hand {
-    background-image: url('img/hand.jpg');
+    background-image: url('img/hand.webp');
     background-size: cover;
 }
 
