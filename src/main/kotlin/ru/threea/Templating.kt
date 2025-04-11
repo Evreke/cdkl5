@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
 import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
+import java.io.File
 
 fun Application.configureTemplating() {
   install(FreeMarker) {
@@ -23,14 +24,12 @@ fun Application.configureTemplating() {
     Page("/about-cdkl5", aboutCdkl, "pages/about-cdkl5.ftl"),
     Page("/genetics", genetics, "pages/genetics.ftl"),
     Page("/treatment", treatment, "pages/treatment.ftl"),
-    Page("/about-us", aboutUs, "pages/about-us.ftl"),
   )
 
   val menuStructure = listOf(
     MenuItem("/about-cdkl5", aboutCdkl),
     MenuItem("/genetics", genetics),
     MenuItem("/treatment", treatment),
-    MenuItem("/about-us", aboutUs),
   )
 
 
