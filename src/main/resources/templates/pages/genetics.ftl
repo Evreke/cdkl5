@@ -354,7 +354,7 @@
             </section>
         </div>
         <!-- Плавающее меню -->
-        <div class="col-lg-2">
+        <div class="col-lg-2 d-none d-md-block">
             <div class="list-group sticky-top pt-3">
                 <nav class="anchor-menu">
                     <a href="#section1" class="list-group-item list-group-item-action d-block py-1">Мутация - всегда плохо?</a>
