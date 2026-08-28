@@ -68,9 +68,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} \
             "mkdir -p /home/${{ secrets.REMOTE_USER }}/cdkl5-staging/artifacts"
 
-      - name: Checkout (for staging compose file)
-        uses: actions/checkout@v4
-
       - name: Copy files via SCP
         run: |
           scp -r -P ${{ secrets.REMOTE_PORT }} ./artifacts ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/cdkl5-staging
