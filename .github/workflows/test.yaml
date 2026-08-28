@@ -47,6 +47,9 @@ jobs:
       cancel-in-progress: true
 
     steps:
+      - name: Checkout (for staging compose file)
+        uses: actions/checkout@v4
+
       - name: Download artifacts
         uses: actions/download-artifact@v4.0.0
         with:
