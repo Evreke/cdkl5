@@ -1,0 +1,25 @@
+---
+interface TocItem {
+  href: string;
+  title: string;
+}
+interface Props {
+  items: TocItem[];
+}
+const { items } = Astro.props;
+---
+
+<aside class="hidden w-64 shrink-0 lg:block">
+  <nav class="sticky top-[120px] rounded-lg border border-neutral-200 bg-white py-2 shadow-sm" aria-label="Содержание страницы">
+    {
+      items.map((it) => (
+        <a
+          href={it.href}
+          class="block border-b border-neutral-100 px-3 py-1.5 text-sm leading-snug text-neutral-700 last:border-b-0 hover:bg-neutral-50 hover:text-primary"
+        >
+          {it.title}
+        </a>
+      ))
+    }
+  </nav>
+</aside>

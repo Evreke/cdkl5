@@ -1,0 +1,32 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-primary text-lavender">
+  <div class="mx-auto max-w-7xl px-4 py-8">
+    <div class="grid gap-8 md:grid-cols-2">
+      <div>
+        <h5 class="mb-3 text-sm font-semibold uppercase tracking-wider text-white">Партнёры</h5>
+        <a href="https://epileptologhelp.ru/" class="transition-colors hover:text-white">Фонд «Содружество»</a>
+      </div>
+      <div>
+        <h5 class="mb-3 text-sm font-semibold uppercase tracking-wider text-white">Контакты</h5>
+        <a
+          href="https://vk.com/cdkl5russia"
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-2 transition-colors hover:text-white"
+        >
+          <span
+            class="inline-flex h-5 w-5 items-center justify-center rounded bg-lavender text-[10px] font-bold text-primary"
+            aria-hidden="true">VK</span
+          >
+          Мы ВКонтакте
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="border-t border-white/10 py-3 text-center text-sm">
+    © {year} Сообщество CDKL5 — Россия
+  </div>
+</footer>

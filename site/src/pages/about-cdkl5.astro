@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import TocMobile from '../components/TocMobile.astro';
+import TocDesktop from '../components/TocDesktop.astro';
+import Accordion from '../components/Accordion.astro';
+import RelatedPages from '../components/RelatedPages.astro';
+import part1 from '../content/about-part1.html?raw';
+import part2 from '../content/about-part2.html?raw';
+
+const toc = [
+  { href: '#section1', title: 'CDD' },
+  { href: '#section2', title: 'Гендерные различия, эпидемиология' },
+  { href: '#section3', title: 'Почему это случилось и случится ли снова?' },
+  { href: '#section4', title: 'Код OMIM, МКБ' },
+  { href: '#section5', title: 'Молекулярная основа заболевания и его возможная обратимость' },
+  { href: '#section6', title: 'Диагностические критерии' },
+  { href: '#section7', title: 'Что сдавать?' },
+  { href: '#section8', title: 'Метод Сэнгера' },
+  { href: '#section9', title: 'Как протекает болезнь?' },
+  { href: '#section11', title: 'Пределы статистики' },
+  { href: '#section12', title: 'История описания заболевания' },
+];
+---
+
+<Layout
+  pageTitle="О CDKL5"
+  description="Что такое синдром дефицита CDKL5 (CDD): симптомы, эпидемиология, диагностические критерии, молекулярная основа и история открытия заболевания."
+  ogImage="/img/eeg.webp"
+  activePath="/about-cdkl5"
+>
+  <div class="mx-auto max-w-7xl px-4">
+    <Hero img="/img/eeg.webp" title="Что такое расстройство CDKL5?" />
+    <div class="mt-12 gap-10 lg:flex">
+      <div class="min-w-0 lg:flex-1">
+        <TocMobile items={toc} />
+        <article class="article">
+          <Fragment set:html={part1} />
+          <Accordion />
+          <Fragment set:html={part2} />
+        </article>
+        <RelatedPages excludePath="/about-cdkl5" />
+      </div>
+      <TocDesktop items={toc} />
+    </div>
+  </div>
+</Layout>

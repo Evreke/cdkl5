@@ -1,0 +1,17 @@
+---
+interface TocItem {
+  href: string;
+  title: string;
+}
+interface Props {
+  items: TocItem[];
+}
+const { items } = Astro.props;
+---
+
+<details class="toc-mobile lg:hidden">
+  <summary>Содержание страницы</summary>
+  <nav>
+    {items.map((it) => <a href={it.href}>{it.title}</a>)}
+  </nav>
+</details>

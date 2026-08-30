@@ -1,0 +1,21 @@
+# Staging compose for cdkl5 (same VPS as prod, isolated from it):
+#  - separate compose project (directory name: cdkl5-staging)
+#  - container named cdkl-staging (prod's is `cdkl` — no name collision)
+#  - NOT published directly — reachable only via swag reverse proxy:
+#      https://staging.cdkl5-russia.ru (HTTP Basic Auth, see swag proxy-confs/staging.subdomain.conf)
+#  - joins prod's cdkl_network (external) so swag can route to it
+#
+# Ожидает в каталоге рядом с compose-файлом: dist/ (сборка Astro), Dockerfile, nginx.conf
+services:
+  cdkl:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cdkl-staging
+    restart: unless-stopped
+    networks:
+      - cdkl_network
+
+networks:
+  cdkl_network:
+    external: true

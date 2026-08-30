@@ -1,0 +1,17 @@
+# Prod compose for cdkl5 static site.
+# Кладётся на сервер в ~/cdkl5 (там же, где жил старый compose).
+# Ожидает в каталоге: dist/ (сборка Astro), Dockerfile, nginx.conf
+# Контейнер cdkl доступен swag'у через внешнюю сеть cdkl_network.
+services:
+  cdkl:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cdkl
+    restart: unless-stopped
+    networks:
+      - cdkl_network
+
+networks:
+  cdkl_network:
+    external: true

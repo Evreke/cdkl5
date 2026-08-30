@@ -1,0 +1,17 @@
+---
+import ArticleCard from './ArticleCard.astro';
+import { sitePages } from '../data/sitePages';
+
+interface Props {
+  excludePath: string;
+}
+const { excludePath } = Astro.props;
+const related = sitePages.filter((p) => p.path !== excludePath);
+---
+
+<section class="mt-16 border-t border-neutral-200 pt-10">
+  <h2 class="mb-6 text-2xl font-bold text-primary-dark">Читайте также</h2>
+  <div class="grid max-w-3xl gap-6 md:grid-cols-2">
+    {related.map((page) => <ArticleCard page={page} />)}
+  </div>
+</section>

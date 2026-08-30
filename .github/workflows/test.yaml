@@ -1,50 +1,59 @@
-name: Сборка
+name: Сборка и деплой
 on:
   push:
     branches: [ trunk ]
   pull_request:
     branches: [ trunk ]
+
 jobs:
   build:
-    name: Build
+    name: Build (Astro)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'gradle'  # Faster builds
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: site/package-lock.json
 
       - name: Build
         run: |
-          ./gradlew build
+          npm ci --prefix site
+          npm run build --prefix site
 
-      - name: Prepare Docker artifacts
+      - name: Pack artifacts (dist + Docker)
         run: |
-          mkdir -p /tmp/artifacts
-          cp build/libs/cdkl5-all.jar /tmp/artifacts/app.jar
-          cp Dockerfile /tmp/artifacts/
+          tar -czf /tmp/site-artifact.tar.gz -C site dist Dockerfile nginx.conf
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4.0.0
+        uses: actions/upload-artifact@v4
         with:
-          name: app-artifacts
-          path: /tmp/artifacts/*
+          name: site-artifact
+          path: /tmp/site-artifact.tar.gz
 
-  deploy:
-    name: Deploy
+  deploy-staging:
+    name: Deploy (staging)
     needs: build
+    # Runs only on PRs to trunk (drafts are skipped)
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    concurrency:
+      # One deploy slot per PR: a new push redeploys, an in-flight older deploy is cancelled
+      group: deploy-staging-${{ github.event.number }}
+      cancel-in-progress: true
 
     steps:
+      - name: Checkout (for staging compose file)
+        uses: actions/checkout@v4
+
       - name: Download artifacts
-        uses: actions/download-artifact@v4.0.0
+        uses: actions/download-artifact@v4
         with:
-          name: app-artifacts
+          name: site-artifact
           path: artifacts/
 
       - name: Set up SSH key
@@ -53,30 +62,127 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
+
       - name: Copy files via SCP
         run: |
-          scp -r -P ${{ secrets.REMOTE_PORT }} ./artifacts ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/deploy
+          ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} \
+            "mkdir -p /home/${{ secrets.REMOTE_USER }}/cdkl5-staging"
+          scp -P ${{ secrets.REMOTE_PORT }} ./artifacts/site-artifact.tar.gz \
+            ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/cdkl5-staging/
+          scp -P ${{ secrets.REMOTE_PORT }} ./deploy/docker-compose.staging.yaml \
+            ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/cdkl5-staging/docker-compose.yaml
 
-      - name: SSH into the server and run commands
+      - name: Deploy on the server
+        run: |
+          ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+          set -e
+          echo "=== Starting staging deployment ==="
+          cd /home/${{ secrets.REMOTE_USER }}/cdkl5-staging || { echo "Failed to change directory"; exit 1; }
+
+          [ -f docker-compose.yaml ] || { echo "docker-compose.yaml is missing in /home/${{ secrets.REMOTE_USER }}/cdkl5-staging"; exit 1; }
+
+          echo "Keeping previous artifact for rollback..."
+          if [ -f site-artifact.tar.gz ]; then cp site-artifact.tar.gz site-artifact.prev.tar.gz; fi
+
+          echo "Unpacking site artifact..."
+          tar -xzf site-artifact.tar.gz
+
+          echo "Rebuilding Docker image..."
+          docker compose build --no-cache cdkl || { echo "Docker build failed"; exit 1; }
+
+          echo "Recreating container (waiting for healthcheck)..."
+          if ! docker compose up -d --wait --no-deps cdkl; then
+            echo "!!! New container is unhealthy — rolling back"
+            if [ -f site-artifact.prev.tar.gz ]; then
+              tar -xzf site-artifact.prev.tar.gz
+              docker compose build --no-cache cdkl && docker compose up -d --wait --no-deps cdkl \
+                || { echo "Rollback failed"; exit 1; }
+              echo "Rolled back to the previous version"
+            fi
+            exit 1
+          fi
+
+          echo "Content smoke test..."
+          docker compose exec -T cdkl wget -qO- http://127.0.0.1:8080/ | grep -q "CDKL5" \
+            || { echo "Content check failed"; exit 1; }
+
+          echo "Verifying container status..."
+          docker compose ps --status running --services | grep -qx "cdkl" || { echo "Staging container not running"; exit 1; }
+
+          echo "=== Staging deployment successful ==="
+          EOF
+
+  deploy-prod:
+    name: Deploy (prod)
+    needs: build
+    # Runs only on merge into trunk (push)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/trunk'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-prod
+
+    steps:
+      - name: Checkout (for prod compose file)
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: site-artifact
+          path: artifacts/
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+
+      - name: Copy files via SCP
+        run: |
+          ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} \
+            "mkdir -p /home/${{ secrets.REMOTE_USER }}/cdkl5"
+          scp -P ${{ secrets.REMOTE_PORT }} ./artifacts/site-artifact.tar.gz \
+            ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/cdkl5/
+          scp -P ${{ secrets.REMOTE_PORT }} ./deploy/docker-compose.prod.yaml \
+            ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/cdkl5/docker-compose.yaml
+
+      - name: Deploy on the server
         run: |
           ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
           set -e
           echo "=== Starting deployment ==="
-          
-          # Navigate to project directory
-          echo "Changing to project directory..."
           cd /home/${{ secrets.REMOTE_USER }}/cdkl5 || { echo "Failed to change directory"; exit 1; }
-          
-          echo "Copying JAR..."
-          cp /home/${{ secrets.REMOTE_USER }}/deploy/artifacts/* ./ || { echo "Failed to copy JAR"; exit 1; }
-          
-          # Rebuild and restart container
-          echo "Rebuilding and restarting Docker container..."
-          docker compose build --no-cache cdkl && \
-          docker compose up -d --force-recreate --no-deps cdkl || { echo "Docker commands failed"; exit 1; }
-          
+
+          [ -f docker-compose.yaml ] || { echo "docker-compose.yaml is missing in /home/${{ secrets.REMOTE_USER }}/cdkl5"; exit 1; }
+
+          echo "Keeping previous artifact for rollback..."
+          if [ -f site-artifact.tar.gz ]; then cp site-artifact.tar.gz site-artifact.prev.tar.gz; fi
+
+          echo "Unpacking site artifact..."
+          tar -xzf site-artifact.tar.gz
+
+          echo "Rebuilding Docker image..."
+          docker compose build --no-cache cdkl || { echo "Docker build failed"; exit 1; }
+
+          echo "Recreating container (waiting for healthcheck)..."
+          if ! docker compose up -d --wait --no-deps cdkl; then
+            echo "!!! New container is unhealthy — rolling back"
+            if [ -f site-artifact.prev.tar.gz ]; then
+              tar -xzf site-artifact.prev.tar.gz
+              docker compose build --no-cache cdkl && docker compose up -d --wait --no-deps cdkl \
+                || { echo "Rollback failed"; exit 1; }
+              echo "Rolled back to the previous version"
+            fi
+            exit 1
+          fi
+
+          echo "Content smoke test..."
+          docker compose exec -T cdkl wget -qO- http://127.0.0.1:8080/ | grep -q "CDKL5" \
+            || { echo "Content check failed"; exit 1; }
+
           echo "Verifying container status..."
-          docker ps --filter "name=cdkl" --format "{{.Status}}" | grep -q "Up" || { echo "Container not running"; exit 1; }
-          
+          docker compose ps --status running --services | grep -qx "cdkl" || { echo "Container not running"; exit 1; }
+
           echo "=== Deployment successful ==="
           EOF
