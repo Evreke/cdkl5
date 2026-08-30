@@ -1,0 +1,19 @@
+---
+import content from '../data/aboutAccordion.json';
+
+interface Item {
+  id: string;
+  title: string;
+  body: string;
+}
+const items = content as Item[];
+---
+
+{
+  items.map((item) => (
+    <details id={item.id}>
+      <summary>{item.title}</summary>
+      <div class="accordion-body" set:html={item.body} />
+    </details>
+  ))
+}

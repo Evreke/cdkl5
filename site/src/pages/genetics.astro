@@ -1,0 +1,39 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import TocMobile from '../components/TocMobile.astro';
+import TocDesktop from '../components/TocDesktop.astro';
+import content from '../content/genetics.html?raw';
+import RelatedPages from '../components/RelatedPages.astro';
+
+const toc = [
+  { href: '#section1', title: 'Мутация – всегда плохо?' },
+  { href: '#section2', title: 'От ДНК к белку' },
+  { href: '#section3', title: 'Как прочесть результаты анализа?' },
+  { href: '#section4', title: 'Мутации – какие?' },
+  { href: '#section5', title: 'Какой тип мутации тяжелее?' },
+  { href: '#section6', title: 'Инактивация одной из двух Х-хромосом у девочек с CDD' },
+  { href: '#section7', title: 'Влияние эпигенетических факторов на течение болезни' },
+];
+---
+
+<Layout
+  pageTitle="Генетика CDKL5"
+  description="Генетика CDKL5: как читать результаты генетического анализа, типы мутаций, строение гена и белка CDKL5."
+  ogImage="/img/dna-rna.webp"
+  activePath="/genetics"
+>
+  <div class="mx-auto max-w-7xl px-4">
+    <Hero img="/img/dna-rna.webp" title="Генетика CDKL5" />
+    <div class="mt-12 gap-10 lg:flex">
+      <div class="min-w-0 lg:flex-1">
+        <TocMobile items={toc} />
+        <article class="article">
+          <Fragment set:html={content} />
+        </article>
+        <RelatedPages excludePath="/genetics" />
+      </div>
+      <TocDesktop items={toc} />
+    </div>
+  </div>
+</Layout>

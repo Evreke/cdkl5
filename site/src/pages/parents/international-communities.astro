@@ -1,0 +1,70 @@
+---
+// TODO(user): проверить ссылки на организации перед публикацией (составлено черновиком)
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+---
+
+<Layout
+  pageTitle="Международные организации"
+  description="Международные организации и фонды, посвящённые синдрому дефицита CDKL5 (CDD): LouLou Foundation, CDKL5 Alliance и другие."
+  ogImage="/img/hand.webp"
+  activePath="/parents/international-communities"
+>
+  <div class="mx-auto max-w-7xl px-4">
+    <Hero img="/img/hand.webp" title="Международные организации" />
+
+    <div class="mx-auto max-w-3xl py-14">
+      <p class="mb-10 text-lg leading-relaxed text-neutral-700">
+        CDD — редкий диагноз в каждой стране. Международные организации объединяют семьи, врачей
+        и исследователей со всего мира: их материалы помогут узнать о болезни больше и почувствовать,
+        что вы часть большого сообщества.
+      </p>
+
+      <div class="mb-10 space-y-6">
+        <div class="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm transition-shadow hover:shadow-md">
+          <div class="mb-1 flex items-baseline justify-between gap-4">
+            <h2 class="text-2xl font-bold text-neutral-900">LouLou Foundation</h2>
+            <span class="shrink-0 text-sm text-neutral-400">Великобритания</span>
+          </div>
+          <p class="mb-4 leading-relaxed text-neutral-600">
+            Фонд, посвящённый исключительно синдрому дефицита CDKL5: финансирует исследования,
+            развивает сеть Centers of Excellence, публикует ресурсы для семей на английском языке.
+          </p>
+          <a
+            href="https://www.louloufoundation.org/"
+            target="_blank"
+            rel="noopener"
+            class="font-semibold text-primary underline hover:text-primary-dark"
+          >
+            louloufoundation.org ↗
+          </a>
+        </div>
+
+        <div class="rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm transition-shadow hover:shadow-md">
+          <div class="mb-1 flex items-baseline justify-between gap-4">
+            <h2 class="text-2xl font-bold text-neutral-900">CDKL5 Alliance</h2>
+            <span class="shrink-0 text-sm text-neutral-400">Международная</span>
+          </div>
+          <p class="mb-4 leading-relaxed text-neutral-600">
+            Объединение родительских организаций разных стран, работающих с CDD. Помогает найти
+            национальное сообщество и следить за международными инициативами.
+          </p>
+          <a
+            href="https://cdkl5alliance.org/"
+            target="_blank"
+            rel="noopener"
+            class="font-semibold text-primary underline hover:text-primary-dark"
+          >
+            cdkl5alliance.org ↗
+          </a>
+        </div>
+      </div>
+
+      <div class="rounded-xl bg-[#f6f4fa] p-6 text-sm leading-relaxed text-neutral-600">
+        Список будет пополняться. Если вы знаете организацию или сообщество, которое стоит добавить, —
+        напишите нам в
+        <a href="https://vk.com/cdkl5russia" target="_blank" rel="noopener" class="font-semibold text-primary underline">ВКонтакте</a>.
+      </div>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,38 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import TocMobile from '../components/TocMobile.astro';
+import TocDesktop from '../components/TocDesktop.astro';
+import content from '../content/treatment.html?raw';
+import RelatedPages from '../components/RelatedPages.astro';
+
+const toc = [
+  { href: '#section1', title: 'Если ребенка нельзя вылечить, это не значит, что ему нельзя помочь' },
+  { href: '#section2', title: 'Судороги CDKL5: как справляться' },
+  { href: '#section3', title: 'Новые подходы к противосудорожной терапии' },
+  { href: '#section4', title: 'Немедикаментозные методы лечения' },
+  { href: '#section5', title: 'Когда болен твой ребенок: история создания LouLou Foundation' },
+  { href: '#section6', title: 'Генотерапия CDD – чудо возможно?' },
+];
+---
+
+<Layout
+  pageTitle="О лечении"
+  description="Лечение при синдроме дефицита CDKL5: контроль судорог, кетогенная диета, VNS, каннабидиол и перспективы генотерапии."
+  ogImage="/img/aav.webp"
+  activePath="/treatment"
+>
+  <div class="mx-auto max-w-7xl px-4">
+    <Hero img="/img/aav.webp" title="О лечении" />
+    <div class="mt-12 gap-10 lg:flex">
+      <div class="min-w-0 lg:flex-1">
+        <TocMobile items={toc} />
+        <article class="article">
+          <Fragment set:html={content} />
+        </article>
+        <RelatedPages excludePath="/treatment" />
+      </div>
+      <TocDesktop items={toc} />
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,147 @@
+---
+interface Props {
+  activePath: string;
+}
+const { activePath } = Astro.props;
+
+const links = [
+  { href: '/about-cdkl5', title: 'О CDKL5' },
+  { href: '/genetics', title: 'Генетика CDKL5' },
+  { href: '/treatment', title: 'О лечении' },
+];
+
+const parentsMenu = [
+  { href: '/parents/russian-community', title: 'Русскоязычное сообщество' },
+  { href: '/parents/international-communities', title: 'Международные организации' },
+];
+
+const isActive = (href: string) => activePath === href;
+const isParents = activePath.startsWith('/parents');
+---
+
+<header class="fixed inset-x-0 top-0 z-50 bg-primary">
+  <div class="mx-auto flex h-[100px] max-w-7xl items-center justify-between px-4">
+    <a href="/" class="flex flex-col items-center leading-none" aria-label="На главную">
+      <span class="text-[42px] font-bold tracking-[2px] text-lavender">CDKL5</span>
+      <span class="text-2xl uppercase tracking-wide text-lavender">Россия</span>
+    </a>
+
+    <button
+      id="menu-toggle"
+      type="button"
+      class="rounded p-2 text-white lg:hidden"
+      aria-controls="mobile-menu"
+      aria-expanded="false"
+      aria-label="Переключить навигацию"
+    >
+      <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+
+    <nav class="hidden lg:block" aria-label="Основная навигация">
+      <ul class="flex items-center">
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class:list={[
+                  'block whitespace-nowrap px-5 py-3 transition-colors',
+                  isActive(link.href) ? 'font-bold text-white' : 'text-lavender hover:text-white',
+                ]}
+              >
+                {link.title}
+              </a>
+            </li>
+          ))
+        }
+
+        <li class="group relative">
+          <button
+            type="button"
+            aria-haspopup="true"
+            class:list={[
+              'flex cursor-pointer items-center gap-1.5 whitespace-nowrap px-5 py-3 transition-colors',
+              isParents ? 'font-bold text-white' : 'text-lavender hover:text-white',
+            ]}
+          >
+            Родителям
+            <svg class="h-3.5 w-3.5 transition-transform group-hover:rotate-180" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <path d="M2 4l4 4 4-4"></path>
+            </svg>
+          </button>
+          <ul
+            class="absolute left-0 top-full z-50 hidden w-72 rounded-lg bg-white py-2 shadow-xl ring-1 ring-neutral-200 group-focus-within:block group-hover:block"
+          >
+            {
+              parentsMenu.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    class:list={[
+                      'block px-4 py-2.5 text-sm transition-colors',
+                      isActive(item.href)
+                        ? 'bg-neutral-100 font-semibold text-primary'
+                        : 'text-neutral-700 hover:bg-neutral-50 hover:text-primary',
+                    ]}
+                  >
+                    {item.title}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <div id="mobile-menu" hidden class="border-t border-white/10 bg-primary lg:hidden">
+    <ul class="py-2">
+      {
+        links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class:list={[
+                'block px-6 py-4',
+                isActive(link.href) ? 'font-bold text-white' : 'text-lavender hover:text-white',
+              ]}
+            >
+              {link.title}
+            </a>
+          </li>
+        ))
+      }
+      <li class="px-6 pt-4 pb-1 text-xs font-semibold uppercase tracking-wider text-lavender/70">
+        Родителям
+      </li>
+      {
+        parentsMenu.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                'block px-6 py-4',
+                isActive(item.href) ? 'font-bold text-white' : 'text-lavender hover:text-white',
+              ]}
+            >
+              {item.title}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => {
+    const open = menu?.hasAttribute('hidden');
+    menu?.toggleAttribute('hidden', !open);
+    btn.setAttribute('aria-expanded', String(Boolean(open)));
+  });
+</script>

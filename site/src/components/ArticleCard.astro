@@ -1,0 +1,20 @@
+---
+import type { SitePage } from '../data/sitePages';
+
+interface Props {
+  page: SitePage;
+}
+const { page } = Astro.props;
+---
+
+<a
+  href={page.path}
+  class="group flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+>
+  <img src={page.img} alt="" class="h-40 w-full object-cover" loading="lazy" />
+  <div class="flex flex-1 flex-col p-5">
+    <h3 class="mb-2 text-lg font-semibold text-neutral-900">{page.cardTitle}</h3>
+    <p class="mb-4 flex-1 text-sm leading-relaxed text-neutral-600">{page.excerpt}</p>
+    <span class="text-sm font-semibold text-primary group-hover:underline">Читать →</span>
+  </div>
+</a>

@@ -4,6 +4,8 @@
 #  - NOT published directly — reachable only via swag reverse proxy:
 #      https://staging.cdkl5-russia.ru (HTTP Basic Auth, see swag proxy-confs/staging.subdomain.conf)
 #  - joins prod's cdkl_network (external) so swag can route to it
+#
+# Ожидает в каталоге рядом с compose-файлом: dist/ (сборка Astro), Dockerfile, nginx.conf
 services:
   cdkl:
     build:

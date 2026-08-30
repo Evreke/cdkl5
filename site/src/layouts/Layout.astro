@@ -1,0 +1,71 @@
+---
+import '@fontsource/noto-sans/cyrillic-400.css';
+import '@fontsource/noto-sans/cyrillic-500.css';
+import '@fontsource/noto-sans/cyrillic-700.css';
+import '@fontsource/noto-sans/latin-400.css';
+import '@fontsource/noto-sans/latin-500.css';
+import '@fontsource/noto-sans/latin-700.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  pageTitle: string;
+  description?: string;
+  ogImage?: string;
+  activePath: string;
+}
+
+const { pageTitle, description = '', ogImage = '/img/hand.webp', activePath } = Astro.props;
+
+const SITE_NAME = 'Сообщество CDKL5 — Россия';
+const fullTitle = activePath === '/' ? SITE_NAME : `${pageTitle} — Сообщество CDKL5`;
+const site = Astro.site ?? new URL('https://cdkl5-russia.ru');
+const canonical = new URL(Astro.url.pathname, site);
+const ogImageAbs = new URL(ogImage, site);
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{fullTitle}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={canonical} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageAbs} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.png" />
+
+    <!-- Yandex.Metrika counter -->
+    <script is:inline>
+      (function (m, e, t, r, i, k, a) {
+        m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
+        m[i].l = 1 * new Date();
+        for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
+        k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a);
+      })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym');
+
+      ym(100658848, 'init', {
+        clickmap: true,
+        trackLinks: true,
+        accurateTrackBounce: true,
+        webvisor: true,
+      });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/100658848" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+  </head>
+  <body class="flex min-h-screen flex-col bg-white font-sans text-neutral-800 antialiased">
+    <Header activePath={activePath} />
+    <main class="flex-grow pt-[100px]">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

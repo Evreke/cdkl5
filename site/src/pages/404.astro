@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  pageTitle="Страница не найдена"
+  description="Запрошенная страница не найдена на сайте сообщества CDKL5 Россия."
+  activePath="/404"
+>
+  <div class="mx-auto max-w-7xl px-4">
+    <div class="mx-auto max-w-2xl py-16 text-center">
+      <p class="mb-0 text-8xl font-bold text-primary-dark">404</p>
+      <h1 class="mb-3 text-3xl font-bold">Страница не найдена</h1>
+      <p class="text-lg text-neutral-600">Возможно, страница была перемещена или ещё не создана.</p>
+      <p class="py-4">
+        <a
+          href="/"
+          class="inline-block rounded-lg bg-primary px-6 py-3 text-white transition-colors hover:bg-primary-dark"
+        >
+          На главную
+        </a>
+      </p>
+      <p>
+        Полезные разделы:
+        <a class="text-primary underline" href="/about-cdkl5">О CDKL5</a> ·
+        <a class="text-primary underline" href="/genetics">Генетика CDKL5</a> ·
+        <a class="text-primary underline" href="/treatment">О лечении</a>
+      </p>
+    </div>
+  </div>
+</Layout>
