@@ -81,12 +81,30 @@ jobs:
 
           [ -f docker-compose.yaml ] || { echo "docker-compose.yaml is missing in /home/${{ secrets.REMOTE_USER }}/cdkl5-staging"; exit 1; }
 
-          echo "Unpacking site artifact..."
-          tar -xzf site-artifact.tar.gz && rm site-artifact.tar.gz
+          echo "Keeping previous artifact for rollback..."
+          if [ -f site-artifact.tar.gz ]; then cp site-artifact.tar.gz site-artifact.prev.tar.gz; fi
 
-          echo "Rebuilding and restarting Docker container..."
-          docker compose build --no-cache cdkl && \
-          docker compose up -d --force-recreate --no-deps cdkl || { echo "Docker commands failed"; exit 1; }
+          echo "Unpacking site artifact..."
+          tar -xzf site-artifact.tar.gz
+
+          echo "Rebuilding Docker image..."
+          docker compose build --no-cache cdkl || { echo "Docker build failed"; exit 1; }
+
+          echo "Recreating container (waiting for healthcheck)..."
+          if ! docker compose up -d --wait --no-deps cdkl; then
+            echo "!!! New container is unhealthy — rolling back"
+            if [ -f site-artifact.prev.tar.gz ]; then
+              tar -xzf site-artifact.prev.tar.gz
+              docker compose build --no-cache cdkl && docker compose up -d --wait --no-deps cdkl \
+                || { echo "Rollback failed"; exit 1; }
+              echo "Rolled back to the previous version"
+            fi
+            exit 1
+          fi
+
+          echo "Content smoke test..."
+          docker compose exec -T cdkl wget -qO- http://127.0.0.1:8080/ | grep -q "CDKL5" \
+            || { echo "Content check failed"; exit 1; }
 
           echo "Verifying container status..."
           docker compose ps --status running --services | grep -qx "cdkl" || { echo "Staging container not running"; exit 1; }
@@ -138,12 +156,30 @@ jobs:
 
           [ -f docker-compose.yaml ] || { echo "docker-compose.yaml is missing in /home/${{ secrets.REMOTE_USER }}/cdkl5"; exit 1; }
 
-          echo "Unpacking site artifact..."
-          tar -xzf site-artifact.tar.gz && rm site-artifact.tar.gz
+          echo "Keeping previous artifact for rollback..."
+          if [ -f site-artifact.tar.gz ]; then cp site-artifact.tar.gz site-artifact.prev.tar.gz; fi
 
-          echo "Rebuilding and restarting Docker container..."
-          docker compose build --no-cache cdkl && \
-          docker compose up -d --force-recreate --no-deps cdkl || { echo "Docker commands failed"; exit 1; }
+          echo "Unpacking site artifact..."
+          tar -xzf site-artifact.tar.gz
+
+          echo "Rebuilding Docker image..."
+          docker compose build --no-cache cdkl || { echo "Docker build failed"; exit 1; }
+
+          echo "Recreating container (waiting for healthcheck)..."
+          if ! docker compose up -d --wait --no-deps cdkl; then
+            echo "!!! New container is unhealthy — rolling back"
+            if [ -f site-artifact.prev.tar.gz ]; then
+              tar -xzf site-artifact.prev.tar.gz
+              docker compose build --no-cache cdkl && docker compose up -d --wait --no-deps cdkl \
+                || { echo "Rollback failed"; exit 1; }
+              echo "Rolled back to the previous version"
+            fi
+            exit 1
+          fi
+
+          echo "Content smoke test..."
+          docker compose exec -T cdkl wget -qO- http://127.0.0.1:8080/ | grep -q "CDKL5" \
+            || { echo "Content check failed"; exit 1; }
 
           echo "Verifying container status..."
           docker compose ps --status running --services | grep -qx "cdkl" || { echo "Container not running"; exit 1; }
