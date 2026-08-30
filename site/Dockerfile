@@ -1,14 +1,9 @@
-# Сборка статического сайта Astro + раздача через nginx
-FROM node:22-alpine AS build
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
+# Runtime-only: раздаёт УЖЕ СОБРАННЫЙ CI дистрибутив (dist/).
+# Сборка Astro выполняется в GitHub Actions; в артефакт кладутся dist/, Dockerfile, nginx.conf.
+# Локальная проверка: сначала `npm run build`, затем `docker build .`
 FROM nginx:alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY dist /usr/share/nginx/html
 EXPOSE 8080
 
 # Tier 1: контейнер считается здоровым, только если nginx отвечает на /
