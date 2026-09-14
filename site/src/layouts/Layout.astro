@@ -1,4 +1,6 @@
 ---
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import '@fontsource/noto-sans/cyrillic-400.css';
 import '@fontsource/noto-sans/cyrillic-500.css';
 import '@fontsource/noto-sans/cyrillic-700.css';
@@ -9,6 +11,9 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import BackToTop from '../components/BackToTop.astro';
+// Vite hashes font filenames, so resolve the real built URLs at build time for preload.
+import cyr400Url from '@fontsource/noto-sans/files/noto-sans-cyrillic-400-normal.woff2?url';
+import cyr700Url from '@fontsource/noto-sans/files/noto-sans-cyrillic-700-normal.woff2?url';
 
 interface Props {
   pageTitle: string;
@@ -17,13 +22,28 @@ interface Props {
   activePath: string;
 }
 
-const { pageTitle, description = '', ogImage = '/img/hand.webp', activePath } = Astro.props;
+const { pageTitle, description = '', ogImage = '/img/hand.jpg', activePath } = Astro.props;
 
 const SITE_NAME = 'Сообщество CDKL5 — Россия';
-const fullTitle = activePath === '/' ? SITE_NAME : `${pageTitle} — Сообщество CDKL5`;
+// Homepage keeps its own SEO title (it must carry the «синдром CDKL5» keyword);
+// inner pages follow the «<page> — Сообщество CDKL5» template.
+const fullTitle = activePath === '/' ? pageTitle : `${pageTitle} — Сообщество CDKL5`;
 const site = Astro.site ?? new URL('https://cdkl5-russia.ru');
 const canonical = new URL(Astro.url.pathname, site);
-const ogImageAbs = new URL(ogImage, site);
+
+// Social parsers handle JPG more reliably than WebP. If the page passes a .webp
+// and a .jpg sibling exists in public/, prefer the JPG and keep the WebP as a
+// second og:image entry. Missing sibling -> keep the original image (no crash).
+const jpgSibling = ogImage.replace(/\.webp$/i, '.jpg');
+const jpgSiblingPaths =
+  jpgSibling === ogImage
+    ? []
+    : [
+        fileURLToPath(new URL(`../../public${jpgSibling}`, import.meta.url)),
+        `${process.cwd()}/public${jpgSibling}`,
+      ];
+const hasJpgSibling = jpgSiblingPaths.some((p) => fs.existsSync(p));
+const ogImages = hasJpgSibling ? [jpgSibling, ogImage] : [ogImage];
 ---
 
 <!doctype html>
@@ -39,9 +59,14 @@ const ogImageAbs = new URL(ogImage, site);
     <meta property="og:title" content={pageTitle} />
     {description && <meta property="og:description" content={description} />}
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={ogImageAbs} />
+    {ogImages.map((img) => <meta property="og:image" content={new URL(img, site)} />)}
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" href="/favicon.png" />
+    <link rel="preconnect" href="https://mc.yandex.ru" crossorigin="anonymous" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin="anonymous" href={cyr400Url} />
+    <link rel="preload" as="font" type="font/woff2" crossorigin="anonymous" href={cyr700Url} />
+    <link rel="icon" href="/favicon.png" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
 
     <!-- Yandex.Metrika counter -->
     <script is:inline>
