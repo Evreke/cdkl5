@@ -37,7 +37,7 @@ CI (`.github/workflows/test.yaml`):
 - merge в `trunk` → деплой в prod (`~/cdkl5`, https://cdkl5-russia.ru)
 
 Контейнер — nginx, раздающий статику. SWAG проксирует его через сеть `cdkl_network`.
-Файлы: `deploy/docker-compose.*.yaml`, `deploy/nginx-prod-swag.conf`,
+Файлы: `deploy/docker-compose.*.yaml`, `deploy/nginx-prod-swag.subdomain.conf`,
 `deploy/nginx-staging-swag.conf`, `deploy/docker-compose.swag.yaml`.
 
 Секреты репозитория (Settings → Secrets → Actions):
@@ -56,6 +56,8 @@ Workflow проверяет ключ хоста по закреплённому 
 
 Первый запуск возможен только после появления DNS A-записей
 (`cdkl5-russia.ru`, `www`, `staging` → IP VPS).
+
+Имена proxy-conf должны оканчиваться на `.subdomain.conf`, иначе swag их не увидит.
 
 ```bash
 cd ~/swag
