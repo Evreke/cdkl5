@@ -1,0 +1,33 @@
+# SWAG reverse proxy for the new prod VPS (45.146.166.76).
+# Deploy as: ~/swag/docker-compose.yaml  (kept OUTSIDE ~/cdkl5, so CI deploys
+# never touch it). Expects next to it: ./swag/config (SWAG config tree).
+#
+# TLS: HTTP-01 validation. Needs DNS A records for the apex, www and staging
+# BEFORE the first start, otherwise certbot fails until DNS propagates.
+# Certs come from the EMAIL/URL/SUBDOMAINS env vars below.
+services:
+  swag:
+    image: lscr.io/linuxserver/swag:latest
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Moscow
+      - URL=cdkl5-russia.ru
+      - VALIDATION=http
+      - SUBDOMAINS=www,staging
+      - EMAIL=${SWAG_EMAIL:?set SWAG_EMAIL in ~/swag/.env}
+    volumes:
+      - ./swag/config:/config
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    networks:
+      - cdkl_network
+
+networks:
+  cdkl_network:
+    external: true
